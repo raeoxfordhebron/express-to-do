@@ -13,6 +13,7 @@ import cors from "cors"
 import morgan from "morgan"
 import MainController from "./controllers/MainController.js"
 import APIController from "./controllers/APIController.js"
+import mongoose from "mongoose"
 
 // *********************************
 // Global Variables & Controller Instantiation
@@ -20,6 +21,18 @@ import APIController from "./controllers/APIController.js"
 const PORT = process.env.PORT || 3333
 const mainController = new MainController()
 const apiController = new APIController()
+const MONGO_URI = process.env.MONGO_URI
+
+// *********************************
+// MongoDB Connection
+// *********************************
+mongoose.connect(MONGO_URI)
+
+mongoose.connection
+.on("open", () => {console.log("Connected to Mongo")})
+.on("close", () => {console.log("Disconnected to Mongo")})
+.on("error", (error) => {console.log(error)})
+
 
 // *********************************
 // Creating Application Object
