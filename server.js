@@ -26,13 +26,28 @@ const MONGO_URI = process.env.MONGO_URI
 // *********************************
 // MongoDB Connection
 // *********************************
-mongoose.connect(MONGO_URI)
+
+const CONFIG = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}
+
+mongoose.connect(MONGO_URI, CONFIG)
 
 mongoose.connection
 .on("open", () => {console.log("Connected to Mongo")})
 .on("close", () => {console.log("Disconnected to Mongo")})
 .on("error", (error) => {console.log(error)})
 
+// *********************************
+// To-Do Model Object
+// *********************************
+const TodoSchema = new mongoose.Schema({
+    message: String,
+    completed: Boolean
+})
+
+const Todo = mongoose.model("To-Do", TodoSchema)
 
 // *********************************
 // Creating Application Object
@@ -56,6 +71,13 @@ app.use("/static", express.static("static"))
 app.use(morgan("tiny"))
 app.use("/", MainRoutes)
 app.use("/api", APIRoutes)
+app.use((req, res, next) => {
+    req.models = {
+        Todo
+    }
+    next()
+})
+
 // Router Specific Middleware
 APIRoutes.use(cors())
 
